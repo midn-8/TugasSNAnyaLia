@@ -135,15 +135,18 @@ def dashboard():
 def about():
     return render_template('about.html', title='About')
 
-if __name__ == '__main__':
+def init_db():
+    """Create database and add sample data if empty."""
     with app.app_context():
-    
         db.create_all()
         print("Database and tables are ready!")
 
         if not User.query.first():
-            user = User(username='admin', email='admin@example.com',
-                        password=generate_password_hash('password123', method='pbkdf2:sha256'))
+            user = User(
+                username='admin',
+                email='admin@example.com',
+                password=generate_password_hash('password123', method='pbkdf2:sha256')
+            )
             db.session.add(user)
             db.session.commit()
             print("Sample user created!")
@@ -154,4 +157,8 @@ if __name__ == '__main__':
             db.session.commit()
             print("Sample post created!")
 
-    app.run(debug=True)
+
+if __name__ == "__main__":
+    init_db()
+    port = int(os.environ.get("PORT", 5000)) 
+    app.run(host="0.0.0.0", port=port, debug=False) 
